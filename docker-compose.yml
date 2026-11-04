@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  # Database Service
+  postgres:
+    image: postgres:16-alpine
+    container_name: nexus-postgres
+    environment:
+      POSTGRES_USER: nexus_user
+      POSTGRES_PASSWORD: nexus_password
+      POSTGRES_DB: nexus_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -u nexus_user -d nexus_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Go API Service
+  api:
+    build:
+      context: ./services/api
+      dockerfile: Dockerfile
+    container_name: nexus-api
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: nexus_user
+      DB_PASSWORD: nexus_password
+      DB_NAME: nexus_db
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Python ML Service
+  ml:
+    build:
+      context: ./services/ml
+      dockerfile: Dockerfile
+    container_name: nexus-ml
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./services/ml/datasets:/app/datasets # Keeps training datasets persistent/accessible
+
+  # Next.js Web Frontend
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: nexus-web
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8080
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
