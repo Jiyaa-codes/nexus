@@ -72,6 +72,10 @@ func main() {
     fmt.Println("---------------------")
 //What does `for _, service := range services` mean?
 //Ignore the index and access each service
+    totalServices := len(services)
+    criticalCount := 0
+    warningCount := 0
+    healthyCount := 0
     for _, service := range services {
 
         status := checkService(service)
@@ -81,17 +85,6 @@ func main() {
         fmt.Printf("Memory: %.1f%%\n", service.Memory)
         fmt.Printf("RPS: %d\n",service.RPS)
         fmt.Println("Status:", status)
-    }
-    fmt.Println("---------------------")
-    totalServices := len(services)
-    fmt.Println("Total Services:", totalServices)
-    criticalCount := 0
-    warningCount := 0
-    healthyCount := 0
-    for _, service := range services {
-
-        status := checkService(service)
-
         if status == "CRITICAL" {
             criticalCount++
         }else if status =="WARNING"{
@@ -100,7 +93,9 @@ func main() {
             healthyCount++
         }
     }
-
+    fmt.Println("---------------------")
+    
+    fmt.Println("Total Services:", totalServices)
     fmt.Println("Critical Services:", criticalCount)
     fmt.Println("Warning Services:", warningCount)
     fmt.Println("Healthy Services:", healthyCount)
