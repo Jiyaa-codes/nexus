@@ -3,10 +3,12 @@ package main
 import "fmt"
 
 type Service struct {
-    Name       string
-    CPU        float64
-    Memory     float64
-    RPS        int
+    Name             string
+    CPU              float64
+    Memory           float64
+    RPS              int
+    CPUThreshold     float64
+    MemoryThreshold  float64
 }
 
 /*func calculateHealth(CPU float64,Memory float64) string{
@@ -19,12 +21,13 @@ type Service struct {
     return "HEALTHY"
 }*/
 //instead of passing two sep values:calhealth(cpu,memory) we can pass the whole struct checkservice(service)
+//For now, we're using 83% of the critical threshold as the warning threshold. Later, we'll make warning thresholds configurable too.
 func checkService(service Service) string {
-    if service.CPU > 90 || service.Memory > 90 {
+    if service.CPU > service.CPUThreshold || service.Memory > service.MemoryThreshold {
         return "CRITICAL"
     }
 
-    if service.CPU > 75 || service.Memory > 75 {
+    if service.CPU > service.CPUThreshold*0.83 || service.Memory > service.MemoryThreshold*0.83 {
         return "WARNING"
     }
 
@@ -53,20 +56,24 @@ func main() {
             CPU:    82.5,
             Memory: 68.2,
             RPS: 1200,
+            CPUThreshold: 85,
+            MemoryThreshold: 90,
         },
         {
             Name:   "auth-service",
             CPU:    45.0,
             Memory: 40.0,
             RPS: 500,
+            CPUThreshold: 95,
+            MemoryThreshold: 90,
         },
-        {
+    }
+        /*{
             Name:   "db-service",
             CPU:    92.0,
             Memory: 65.0,
             RPS: 2500,
-        },
-    }
+        }*/
 
     fmt.Println("NEXUS SERVICE MONITOR")
     fmt.Println("---------------------")
