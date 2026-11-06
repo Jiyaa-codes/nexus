@@ -85,12 +85,13 @@ func main() {
         fmt.Printf("Memory: %.1f%%\n", service.Memory)
         fmt.Printf("RPS: %d\n",service.RPS)
         fmt.Println("Status:", status)
-        if status == "CRITICAL" {
-            criticalCount++
-        }else if status =="WARNING"{
-            warningCount++
-        }else{
-            healthyCount++
+        switch status {
+            case "CRITICAL":
+                criticalCount++
+            case "WARNING":
+                warningCount++
+            default:
+                healthyCount++
         }
     }
     fmt.Println("---------------------")
