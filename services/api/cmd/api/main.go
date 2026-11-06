@@ -9,13 +9,25 @@ type Service struct {
     RPS        int
 }
 
-func calculateHealth(CPU float64,Memory float64) string{
+/*func calculateHealth(CPU float64,Memory float64) string{
     if CPU>90 || Memory>90{
         return "CRITICAL"
     }
     if CPU>75 || Memory>75{
         return "WARNING"
     }
+    return "HEALTHY"
+}*/
+//instead of passing two sep values:calhealth(cpu,memory) we can pass the whole struct checkservice(service)
+func checkService(service Service) string {
+    if service.CPU > 90 || service.Memory > 90 {
+        return "CRITICAL"
+    }
+
+    if service.CPU > 75 || service.Memory > 75 {
+        return "WARNING"
+    }
+
     return "HEALTHY"
 }
 func main() {
@@ -58,10 +70,11 @@ func main() {
 
     fmt.Println("NEXUS SERVICE MONITOR")
     fmt.Println("---------------------")
-
+//What does `for _, service := range services` mean?
+//Ignore the index and access each service
     for _, service := range services {
 
-        status := calculateHealth(service.CPU, service.Memory)
+        status := checkService(service)
 
         fmt.Println("\n" + service.Name)
         fmt.Printf("CPU: %.1f%%\n", service.CPU)
@@ -72,17 +85,26 @@ func main() {
     totalServices := len(services)
     fmt.Println("Total Services:", totalServices)
     criticalCount := 0
+    warningCount := 0
+    healthyCount := 0
     for _, service := range services {
 
-        status := calculateHealth(service.CPU, service.Memory)
+        status := checkService(service)
 
         if status == "CRITICAL" {
             criticalCount++
+        }else if status =="WARNING"{
+            warningCount++
+        }else{
+            healthyCount++
         }
     }
 
     fmt.Println("Critical Services:", criticalCount)
+    fmt.Println("Warning Services:", warningCount)
+    fmt.Println("Healthy Services:", healthyCount)
     }
+
     /*status := cpuhealth(payment.CPU,payment.Memory)
     status1 := cpuhealth(auth.CPU,auth.Memory)
     status2 := cpuhealth(db.CPU,db.Memory)
