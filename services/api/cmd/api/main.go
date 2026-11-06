@@ -81,6 +81,7 @@ func main() {
         fmt.Printf("Memory: %.1f%%\n", service.Memory)
         fmt.Printf("RPS: %d\n",service.RPS)
         fmt.Println("Status:", status)
+    }
     fmt.Println("---------------------")
     totalServices := len(services)
     fmt.Println("Total Services:", totalServices)
@@ -103,7 +104,6 @@ func main() {
     fmt.Println("Critical Services:", criticalCount)
     fmt.Println("Warning Services:", warningCount)
     fmt.Println("Healthy Services:", healthyCount)
-    }
 
     /*status := cpuhealth(payment.CPU,payment.Memory)
     status1 := cpuhealth(auth.CPU,auth.Memory)
