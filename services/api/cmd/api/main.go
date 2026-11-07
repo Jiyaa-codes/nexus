@@ -22,7 +22,7 @@ type Service struct {
 }*/
 //instead of passing two sep values:calhealth(cpu,memory) we can pass the whole struct checkservice(service)
 //For now, we're using 83% of the critical threshold as the warning threshold. Later, we'll make warning thresholds configurable too.
-func checkService(service Service) string {
+/*func checkService(service Service) string {
     if service.CPU > service.CPUThreshold || service.Memory > service.MemoryThreshold {
         return "CRITICAL"
     }
@@ -32,9 +32,23 @@ func checkService(service Service) string {
     }
 
     return "HEALTHY"
+} day2*/
+func (s Service) checkHealth() string {
+    if s.CPU > s.CPUThreshold || s.Memory > s.MemoryThreshold {
+        return "CRITICAL"
+    }
+
+    if s.CPU > 75 || s.Memory > 75 {
+        return "WARNING"
+    }
+
+    return "HEALTHY"
+}
+// Pointer receiver: modifies original service
+func (s *Service) updateCPU(value float64) {
+    s.CPU = value
 }
 func main() {
-
     /*payment := Service{
         Name:      "payment-service",
         CPU:       82.5,
@@ -50,6 +64,23 @@ func main() {
         CPU: 92.0,
         Memory: 65.0,
     }*/
+    // Demonstrating methods and pointers
+    payment := Service{
+        Name: "payment-service",
+        CPU: 82.5,
+        Memory: 68.2,
+        RPS: 1200,
+        CPUThreshold: 90,
+        MemoryThreshold: 90,
+    }
+
+    fmt.Println("Before update: ",payment.checkHealth())
+
+    payment.updateCPU(95)
+
+    fmt.Println("AFter update:",payment.checkHealth())
+    fmt.Println("Updated CPU: ",payment.CPU)
+
      services := []Service{
         {
             Name:   "payment-service",
@@ -74,18 +105,18 @@ func main() {
             Memory: 65.0,
             RPS: 2500,
         }*/
-
-    fmt.Println("NEXUS SERVICE MONITOR")
-    fmt.Println("---------------------")
-//What does `for _, service := range services` mean?
-//Ignore the index and access each service
     totalServices := len(services)
     criticalCount := 0
     warningCount := 0
     healthyCount := 0
+    fmt.Println("NEXUS SERVICE MONITOR")
+    fmt.Println("---------------------")
+//What does `for _, service := range services` mean?
+//Ignore the index and access each service
+   
     for _, service := range services {
 
-        status := checkService(service)
+        status := service.checkHealth()
 
         fmt.Println("\n" + service.Name)
         fmt.Printf("CPU: %.1f%%\n", service.CPU)
